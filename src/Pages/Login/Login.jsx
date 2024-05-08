@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import img from "../../assets/images/login/login.svg"
 import { useContext } from "react";
 import { Authcontext } from "../../Provider/AuthProvider";
+import axios from "axios";
 
 const Login = () => {
 
@@ -15,12 +16,24 @@ const Login = () => {
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        console.log(name, email, password)
+        // console.log(name, email, password)
 
         signIn(email, password) 
         .then(result => {
-            console.log(result.user)
-            navigate(location?.state ? location?.state : '/')
+            const loggedInUser = result.user;
+            console.log(loggedInUser)
+            const user = {email}
+            
+
+            // get access token
+            axios.post('http://localhost:5000/jwt', user, {withCredentials: true})
+            .then(res =>{
+                console.log(res.data);
+                if(res.data.success){
+                    navigate(location?.state ? location?.state : '/')
+                }
+            })
+
         })
         .catch(error => {
             console.log(error.code, error.message)
